@@ -9,7 +9,7 @@ namespace core_usuarios.Entities
     {
         public Usuario()
         {
-            DireccionUsuario = new HashSet<Direccion>();
+            Direccions = new HashSet<Direccion>();
         }
 
         public string Numrut { get; set; }
@@ -30,6 +30,6 @@ namespace core_usuarios.Entities
         public virtual Genero IdGeneroNavigation { get; set; }
         public virtual Pais IdPaisNavigation { get; set; }
         public virtual TipoUsuario IdTipoNavigation { get; set; }
-        public virtual IEnumerable<Direccion> DireccionUsuario { get; set; }
+        public virtual IEnumerable<Direccion> Direccions { get; set; }
     }
 }

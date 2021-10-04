@@ -7,6 +7,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Oracle.ManagedDataAccess;
+using Oracle.ManagedDataAccess.Client;
 
 namespace infrastructure_usuarios.Repositories
 {
@@ -27,10 +29,26 @@ namespace infrastructure_usuarios.Repositories
 
         public async Task<Usuario> GetUsuario(string rut)
         {
-            var usuario = await _context.Usuarios.FirstOrDefaultAsync(x => x.Numrut == rut);
-
+            var usuario = await _context.Usuarios.FromSqlRaw($"exec sp_buscar_usuario_por_rut{rut}").FirstOrDefaultAsync();
+            //var usuario = await _context.Usuarios.FirstOrDefaultAsync(x => x.Numrut == rut);
             return usuario;
-        }
 
+            //using (OracleConnection con = new OracleConnection(Environment.GetEnvironmentVariable("DB_TURISMO_REAL")))
+            //{
+            //    using (OracleCommand cmd = con.CreateCommand())
+            //    {
+            //        try
+            //        {
+
+            //        }
+            //        catch(Excepction e)
+            //        {
+
+            //        }
+            //    }
+            //}
+
+
+        }
     }
 }

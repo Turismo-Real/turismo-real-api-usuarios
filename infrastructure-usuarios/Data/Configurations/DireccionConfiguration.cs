@@ -62,7 +62,7 @@ namespace infrastructure_usuarios.Data.Configurations
                 .HasConstraintName("FK_DIRECCION_COMUNA");
 
             builder.HasOne(d => d.NumrutNavigation)
-                .WithMany(p => p.DireccionUsuario)
+                .WithMany(p => p.Direccions)
                 .HasForeignKey(d => d.Numrut)
                 .HasConstraintName("FK_DIRECCION_USUARIO");
         }
