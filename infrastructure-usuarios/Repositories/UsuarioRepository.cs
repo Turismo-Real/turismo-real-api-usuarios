@@ -3,12 +3,14 @@ using core_usuarios.Interfaces;
 using infrastructure_usuarios.Data;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Data;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Oracle.ManagedDataAccess;
 using Oracle.ManagedDataAccess.Client;
+using core_usuarios.DTOs;
 
 namespace infrastructure_usuarios.Repositories
 {
@@ -47,8 +49,59 @@ namespace infrastructure_usuarios.Repositories
             //        }
             //    }
             //}
+        }
 
+        public async Task<bool> AddUsuario(UsuarioDTO usuario)
+        {
+            try
+            {
+                OracleConnection con = new OracleConnection(Environment.GetEnvironmentVariable("DB_CONNECTION"));
+                con.Open();
+                OracleCommand cmd = new OracleCommand("sp_agregar_usuario", con);
+                cmd.CommandType = CommandType.StoredProcedure;
+
+                cmd.Parameters.Add("rut_u", OracleDbType.Varchar2).Direction = ParameterDirection.Input;
+                cmd.Parameters.Add("dv_u", OracleDbType.Varchar2).Direction = ParameterDirection.Input;
+                cmd.Parameters.Add("pnombre_u", OracleDbType.Varchar2).Direction = ParameterDirection.Input;
+                cmd.Parameters.Add("snombre_u", OracleDbType.Varchar2).Direction = ParameterDirection.Input;
+                cmd.Parameters.Add("apepat_u", OracleDbType.Varchar2).Direction = ParameterDirection.Input;
+                cmd.Parameters.Add("apemat_u", OracleDbType.Varchar2).Direction = ParameterDirection.Input;
+                cmd.Parameters.Add("fecnac_u", OracleDbType.Varchar2).Direction = ParameterDirection.Input;
+                cmd.Parameters.Add("email_u", OracleDbType.Varchar2).Direction = ParameterDirection.Input;
+                cmd.Parameters.Add("telmovil_u", OracleDbType.Varchar2).Direction = ParameterDirection.Input;
+                cmd.Parameters.Add("telfijo_u", OracleDbType.Varchar2).Direction = ParameterDirection.Input;
+                cmd.Parameters.Add("pass_u", OracleDbType.Varchar2).Direction = ParameterDirection.Input;
+                cmd.Parameters.Add("genero_u", OracleDbType.Varchar2).Direction = ParameterDirection.Input;
+                cmd.Parameters.Add("pais_u", OracleDbType.Varchar2).Direction = ParameterDirection.Input;
+                cmd.Parameters.Add("tipo_u", OracleDbType.Varchar2).Direction = ParameterDirection.Input;
+
+                cmd.Parameters["rut_u"].Value = usuario.rut;
+                cmd.Parameters["dv_u"].Value = usuario.dv;
+                cmd.Parameters["pnombre_u"].Value = usuario.primerNombre;
+                cmd.Parameters["snombre_u"].Value = usuario.segundoNombre;
+                cmd.Parameters["apepat_u"].Value = usuario.apellidoPaterno;
+                cmd.Parameters["apemat_u"].Value = usuario.apellidoMaterno;
+                cmd.Parameters["fecnac_u"].Value = usuario.fechaNacimiento.ToString("dd/MM/yyyy");
+                cmd.Parameters["email_u"].Value = usuario.correo;
+                cmd.Parameters["telmovil_u"].Value = usuario.telefonoMovil;
+                cmd.Parameters["telfijo_u"].Value = usuario.telefonoFijo;
+                cmd.Parameters["pass_u"].Value = usuario.password;
+                cmd.Parameters["genero_u"].Value = usuario.genero;
+                cmd.Parameters["pais_u"].Value = usuario.pais;
+                cmd.Parameters["tipo_u"].Value = usuario.tipoUsuario;
+
+                await cmd.ExecuteNonQueryAsync();
+                con.Close();
+                return true;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return false;
+            }
 
         }
+
+
     }
 }

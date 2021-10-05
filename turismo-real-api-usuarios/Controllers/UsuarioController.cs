@@ -1,15 +1,13 @@
-﻿using core_usuarios.Interfaces;
-using infrastructure_usuarios.Repositories;
-using Microsoft.AspNetCore.Http;
+﻿using core_usuarios.DTOs;
+using core_usuarios.Interfaces;
+using core_usuarios.Messages;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace turismo_real_api_usuarios.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/v1/[controller]")]
     [ApiController]
     public class UsuarioController : ControllerBase
     {
@@ -31,6 +29,17 @@ namespace turismo_real_api_usuarios.Controllers
         {
             var usuario = await _usuarioRepository.GetUsuario(rut);
             return Ok(usuario);
+        }
+
+        [HttpPost]
+        public async Task<object> AddUsuario([FromBody]UsuarioDTO pyl)
+        {
+            bool result = await _usuarioRepository.AddUsuario(pyl);
+
+            if (result)
+                return new UsuarioResponse("Usuario agregado.");
+            return new UsuarioResponse("Error al agregar usuario");
+
         }
     }
 }

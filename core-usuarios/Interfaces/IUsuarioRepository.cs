@@ -1,4 +1,5 @@
-﻿using core_usuarios.Entities;
+﻿using core_usuarios.DTOs;
+using core_usuarios.Entities;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -11,5 +12,7 @@ namespace core_usuarios.Interfaces
         Task<IEnumerable<Usuario>> GetUsuarios();
 
         Task<Usuario> GetUsuario(string rut);
+
+        Task<bool> AddUsuario(UsuarioDTO usuario);
     }
 }
