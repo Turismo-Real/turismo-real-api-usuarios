@@ -4,6 +4,7 @@ using core_usuarios.Messages;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
+using turismo_real_api_usuarios.Log;
 
 namespace turismo_real_api_usuarios.Controllers
 {
@@ -34,12 +35,31 @@ namespace turismo_real_api_usuarios.Controllers
         [HttpPost]
         public async Task<object> AddUsuario([FromBody]UsuarioDTO pyl)
         {
+            LogModel log = new LogModel();
+            log.servicio = "turismo-real-api-usuarios";
+            log.payload = pyl;
+            DateTime startService = DateTime.Now;
+            UsuarioResponse response;
+
             bool result = await _usuarioRepository.AddUsuario(pyl);
 
             if (result)
-                return new UsuarioResponse("Usuario agregado.");
-            return new UsuarioResponse("Error al agregar usuario");
+            {
+                response = new UsuarioResponse("Usuario agregado.");
+            } else {
+                response = new UsuarioResponse("Error al agregar usuario.");
+            }
 
+            // LOG
+            log.inicioSolicitud = startService;
+            log.finSolicitud = DateTime.Now;
+            log.tiempoSolicitud = (log.finSolicitud - log.inicioSolicitud).TotalMilliseconds + " ms";
+            log.statusCode = 200;
+            log.response = response;
+            Console.WriteLine(log.parseJson());
+            // LOG
+
+            return response;
         }
     }
 }
