@@ -8,6 +8,7 @@ namespace turismo_real_api_usuarios.Log
         public int statusCode = 0;
         public string servicio = string.Empty;
         public string method = string.Empty;
+        public string endpoint = string.Empty;
         public DateTime inicioSolicitud;
         public DateTime finSolicitud;
         public string tiempoSolicitud;

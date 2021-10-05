@@ -29,7 +29,29 @@ namespace turismo_real_api_usuarios.Controllers
         [HttpGet("{rut}")]
         public async Task<object> GetUsuario(string rut)
         {
+            LogModel log = new LogModel();
+            log.servicio = "turismo-real-api-usuarios";
+            log.method = "GET";
+            log.endpoint = "/api/v1/usuario/{rut}";
+            log.payload = rut;
+            DateTime startService = DateTime.Now;
+
             var usuario = await _usuarioRepository.GetUsuario(rut);
+
+            if(usuario == null)
+            {
+                return new BadResponse($"No se encontró usuario con rut {rut}");
+            }
+
+            // LOG
+            log.inicioSolicitud = startService;
+            log.finSolicitud = DateTime.Now;
+            log.tiempoSolicitud = (log.finSolicitud - log.inicioSolicitud).TotalMilliseconds + " ms";
+            log.statusCode = 200;
+            log.response = usuario;
+            Console.WriteLine(log.parseJson());
+            // LOG
+
             return Ok(usuario);
         }
 
@@ -40,6 +62,7 @@ namespace turismo_real_api_usuarios.Controllers
             LogModel log = new LogModel();
             log.servicio = "turismo-real-api-usuarios";
             log.method = "POST";
+            log.endpoint = "/api/v1/usuario";
             log.payload = pyl;
             DateTime startService = DateTime.Now;
             UsuarioResponse response;
@@ -72,6 +95,7 @@ namespace turismo_real_api_usuarios.Controllers
             LogModel log = new LogModel();
             log.servicio = "turismo-real-api-usuarios";
             log.method = "DELETE";
+            log.endpoint = "/api/v1/usuario/{rut}";
             DateTime startService = DateTime.Now;
             DeleteResponseOK response;
 
