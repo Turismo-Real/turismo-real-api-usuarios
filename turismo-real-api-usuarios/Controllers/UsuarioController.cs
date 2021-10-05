@@ -32,6 +32,7 @@ namespace turismo_real_api_usuarios.Controllers
             return Ok(usuario);
         }
 
+        // POST: /api/v1/usuario
         [HttpPost]
         public async Task<object> AddUsuario([FromBody]UsuarioDTO pyl)
         {
@@ -60,6 +61,16 @@ namespace turismo_real_api_usuarios.Controllers
             // LOG
 
             return response;
+        }
+
+        // DELETE: /api/v1/usuario/{rut}
+        [HttpDelete("{rut}")]
+        public async Task<object> DeleteUsuario(string rut)
+        {
+            DeleteResponseOK response;
+            bool removed = await _usuarioRepository.DeleteUsuario(rut);
+            Console.WriteLine("REMOVED IN CONTROLLER: "+removed);
+            return removed ? new DeleteResponseOK("Usuario eliminado.", removed) : new DeleteResponseOK("Error al eliminar usuario.", removed);
         }
     }
 }

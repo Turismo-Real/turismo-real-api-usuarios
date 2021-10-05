@@ -14,5 +14,7 @@ namespace core_usuarios.Interfaces
         Task<Usuario> GetUsuario(string rut);
 
         Task<bool> AddUsuario(UsuarioDTO usuario);
+
+        Task<bool> DeleteUsuario(string rut);
     }
 }
