@@ -25,8 +25,9 @@ namespace turismo_real_api_usuarios.Controllers
             return Ok(usuarios);
         }
 
+        // GET /api/v1/usuario/{rut}
         [HttpGet("{rut}")]
-        public async Task<IActionResult> GetUsuario(string rut)
+        public async Task<object> GetUsuario(string rut)
         {
             var usuario = await _usuarioRepository.GetUsuario(rut);
             return Ok(usuario);

@@ -29,26 +29,31 @@ namespace infrastructure_usuarios.Repositories
             return usuarios;
         }
 
-        public async Task<Usuario> GetUsuario(string rut)
+        public async Task<UsuarioDTO> GetUsuario(string rut)
         {
-            var usuario = await _context.Usuarios.FromSqlRaw($"exec sp_buscar_usuario_por_rut{rut}").FirstOrDefaultAsync();
-            //var usuario = await _context.Usuarios.FirstOrDefaultAsync(x => x.Numrut == rut);
-            return usuario;
+            try
+            {
+                OracleConnection con = new OracleConnection(Environment.GetEnvironmentVariable("DB_CONNECTION"));
+                con.Open();
 
-            //using (OracleConnection con = new OracleConnection(Environment.GetEnvironmentVariable("DB_TURISMO_REAL")))
-            //{
-            //    using (OracleCommand cmd = con.CreateCommand())
-            //    {
-            //        try
-            //        {
+                OracleCommand cmd = ConfigBuscarUsuarioParams(con);
+                cmd.Parameters["rut"].Value = rut;
 
-            //        }
-            //        catch(Excepction e)
-            //        {
-
-            //        }
-            //    }
-            //}
+                OracleDataReader reader = (OracleDataReader)await cmd.ExecuteReaderAsync();
+                UsuarioDTO usuario = null;
+                while (reader.Read())
+                {
+                    usuario = buildUsuarioEntity(reader);
+                }
+                reader.Close();
+                con.Close();
+                return usuario;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return null;
+            }
         }
 
         public async Task<bool> AddUsuario(UsuarioDTO usuario)
@@ -134,6 +139,15 @@ namespace infrastructure_usuarios.Repositories
             return cmd;
         }
 
+        public OracleCommand ConfigBuscarUsuarioParams(OracleConnection con)
+        {
+            OracleCommand cmd = new OracleCommand("sp_usuario_por_rut", con);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.Add("rut", OracleDbType.Varchar2).Direction = ParameterDirection.Input;
+            cmd.Parameters.Add("cur_user", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+            return cmd;
+        }
+
 
 
         public void setAgregarUsuarioParams(OracleCommand cmd, UsuarioDTO usuario)
@@ -159,6 +173,34 @@ namespace infrastructure_usuarios.Repositories
             cmd.Parameters["casa_u"].Value = usuario.direccion.casa;
         }
 
+        public UsuarioDTO buildUsuarioEntity(OracleDataReader reader)
+        {
+            UsuarioDTO user = new UsuarioDTO();
+            user.rut = reader.GetValue(reader.GetOrdinal("numrut")).ToString();
+            user.dv = reader.GetValue(reader.GetOrdinal("dvrut")).ToString();
+            user.primerNombre = reader.GetValue(reader.GetOrdinal("pnombre")).ToString();
+            user.segundoNombre = reader.GetValue(reader.GetOrdinal("snombre")).ToString();
+            user.apellidoPaterno = reader.GetValue(reader.GetOrdinal("apepat")).ToString();
+            user.apellidoMaterno = reader.GetValue(reader.GetOrdinal("apemat")).ToString();
+            user.fechaNacimiento = Convert.ToDateTime(reader.GetValue(reader.GetOrdinal("fec_nac")).ToString());
+            user.correo = reader.GetValue(reader.GetOrdinal("correo")).ToString();
+            user.telefonoMovil = reader.GetValue(reader.GetOrdinal("telefono_movil")).ToString();
+            user.telefonoFijo = reader.GetValue(reader.GetOrdinal("telefono_fijo")).ToString();
+            user.genero = reader.GetValue(reader.GetOrdinal("genero")).ToString();
+            user.pais = reader.GetValue(reader.GetOrdinal("pais")).ToString();
+            user.tipoUsuario = reader.GetValue(reader.GetOrdinal("tipo")).ToString();
+
+            DireccionDTO user_direction = new DireccionDTO();
+            user_direction.region = reader.GetValue(reader.GetOrdinal("region")).ToString();
+            user_direction.comuna = reader.GetValue(reader.GetOrdinal("comuna")).ToString();
+            user_direction.calle = reader.GetValue(reader.GetOrdinal("calle")).ToString();
+            user_direction.numero = reader.GetValue(reader.GetOrdinal("numero")).ToString();
+            user_direction.depto = reader.GetValue(reader.GetOrdinal("depto")).ToString();
+            user_direction.casa = reader.GetValue(reader.GetOrdinal("casa")).ToString();
+            user.direccion = user_direction;
+
+            return user;
+        }
 
 
     }

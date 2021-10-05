@@ -11,7 +11,7 @@ namespace core_usuarios.Interfaces
     {
         Task<IEnumerable<Usuario>> GetUsuarios();
 
-        Task<Usuario> GetUsuario(string rut);
+        Task<UsuarioDTO> GetUsuario(string rut);
 
         Task<bool> AddUsuario(UsuarioDTO usuario);
 
