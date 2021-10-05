@@ -38,6 +38,7 @@ namespace turismo_real_api_usuarios.Controllers
         {
             LogModel log = new LogModel();
             log.servicio = "turismo-real-api-usuarios";
+            log.method = "POST";
             log.payload = pyl;
             DateTime startService = DateTime.Now;
             UsuarioResponse response;
@@ -67,10 +68,33 @@ namespace turismo_real_api_usuarios.Controllers
         [HttpDelete("{rut}")]
         public async Task<object> DeleteUsuario(string rut)
         {
+            LogModel log = new LogModel();
+            log.servicio = "turismo-real-api-usuarios";
+            log.method = "DELETE";
+            DateTime startService = DateTime.Now;
             DeleteResponseOK response;
+
             bool removed = await _usuarioRepository.DeleteUsuario(rut);
-            Console.WriteLine("REMOVED IN CONTROLLER: "+removed);
-            return removed ? new DeleteResponseOK("Usuario eliminado.", removed) : new DeleteResponseOK("Error al eliminar usuario.", removed);
+
+            if (removed)
+            {
+                response = new DeleteResponseOK("Usuario eliminado.", removed);
+            }
+            else
+            {
+                response = new DeleteResponseOK("Error al eliminar usuario.", removed);
+            }
+
+            // LOG
+            log.inicioSolicitud = startService;
+            log.finSolicitud = DateTime.Now;
+            log.tiempoSolicitud = (log.finSolicitud - log.inicioSolicitud).TotalMilliseconds + " ms";
+            log.statusCode = 200;
+            log.response = response;
+            Console.WriteLine(log.parseJson());
+            // LOG
+
+            return response;
         }
     }
 }

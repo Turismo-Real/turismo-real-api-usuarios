@@ -85,7 +85,7 @@ namespace infrastructure_usuarios.Repositories
                 con.Close();
 
                 int removed = int.Parse(cmd.Parameters["removed"].Value.ToString());
-                Console.WriteLine("REMOVED IN REPOSITORY: " + removed);
+
                 if(removed == 1)
                     return true;
                 return false;
@@ -96,10 +96,6 @@ namespace infrastructure_usuarios.Repositories
                 return false;
             }
         }
-
-
-
-
 
         public OracleCommand ConfigAgregarUsuarioParams(OracleConnection con)
         {
