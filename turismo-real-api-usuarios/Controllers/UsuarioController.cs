@@ -23,7 +23,22 @@ namespace turismo_real_api_usuarios.Controllers
         [HttpGet]
         public async Task<IEnumerable<UsuarioDTO>> GetUsuarios()
         {
+            LogModel log = new LogModel();
+            log.servicio = "turismo-real-api-usuarios";
+            log.method = "GET";
+            log.endpoint = "/api/v1/usuario";
+            DateTime startService = DateTime.Now;
+
             IEnumerable<UsuarioDTO> usuarios = await _usuarioRepository.GetUsuarios();
+
+            // LOG
+            log.inicioSolicitud = startService;
+            log.finSolicitud = DateTime.Now;
+            log.tiempoSolicitud = (log.finSolicitud - log.inicioSolicitud).TotalMilliseconds + " ms";
+            log.statusCode = 200;
+            log.response = usuarios;
+            Console.WriteLine(log.parseJson());
+            // LOG
             return usuarios;
         }
 

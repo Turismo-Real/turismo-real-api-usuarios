@@ -30,7 +30,6 @@ namespace infrastructure_usuarios.Repositories
                 cmd.Parameters.Add("usuarios", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
 
                 OracleDataReader reader = (OracleDataReader)await cmd.ExecuteReaderAsync();
-                con.Close();
                 
                 List<UsuarioDTO> usuarios = new List<UsuarioDTO>();
                 while (reader.Read())
@@ -38,6 +37,7 @@ namespace infrastructure_usuarios.Repositories
                     UsuarioDTO usuario = UsuarioBuilder.buildUsuarioEntity(reader);
                     usuarios.Add(usuario);
                 }
+                con.Close();
                 return usuarios;
             }
             catch (Exception e)
