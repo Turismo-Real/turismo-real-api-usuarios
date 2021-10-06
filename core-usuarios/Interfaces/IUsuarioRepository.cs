@@ -9,7 +9,7 @@ namespace core_usuarios.Interfaces
 {
     public interface IUsuarioRepository
     {
-        Task<IEnumerable<Usuario>> GetUsuarios();
+        Task<List<UsuarioDTO>> GetUsuarios();
 
         Task<UsuarioDTO> GetUsuario(string rut);
 
