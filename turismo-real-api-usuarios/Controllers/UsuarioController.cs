@@ -3,6 +3,7 @@ using core_usuarios.Interfaces;
 using core_usuarios.Messages;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using turismo_real_api_usuarios.Log;
 
@@ -18,11 +19,12 @@ namespace turismo_real_api_usuarios.Controllers
             _usuarioRepository = usuarioRepository;
         }
 
+        // GET /api/v1/usuarios
         [HttpGet]
-        public async Task<IActionResult> GetUsuarios()
+        public async Task<IEnumerable<UsuarioDTO>> GetUsuarios()
         {
-            var usuarios = await _usuarioRepository.GetUsuarios();
-            return Ok(usuarios);
+            IEnumerable<UsuarioDTO> usuarios = await _usuarioRepository.GetUsuarios();
+            return usuarios;
         }
 
         // GET /api/v1/usuario/{rut}
