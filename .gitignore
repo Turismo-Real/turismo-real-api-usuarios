@@ -2,9 +2,3 @@ bin
 obj
 .vs
 .vscode
-/core-usuarios/bin
-/core-usuarios/obj
-/turismo-real-api-usuarios/bin
-/turismo-real-api-usuarios/obj
-infrastructure-usuarios/bin
-infrastructure-usuarios/obj
