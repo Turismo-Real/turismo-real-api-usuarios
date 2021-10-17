@@ -10,10 +10,10 @@ namespace TurismoReal_Usuarios.Core.Interfaces
     {
         Task<List<UsuarioDTO>> GetUsuarios();
 
-        Task<UsuarioDTO> GetUsuario(string rut);
+        Task<UsuarioDTO> GetUsuario(int id);
 
-        Task<bool> AddUsuario(UsuarioDTO usuario);
+        Task<int> AddUsuario(UsuarioDTO usuario);
 
-        Task<bool> DeleteUsuario(string rut);
+        Task<bool> DeleteUsuario(int id);
     }
 }

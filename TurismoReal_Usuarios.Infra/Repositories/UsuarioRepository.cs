@@ -19,6 +19,7 @@ namespace TurismoReal_Usuarios.Infra.Repositories
             _context = new OracleContext();
         }
 
+        // GET ALL USERS
         public async Task<List<UsuarioDTO>> GetUsuarios()
         {
             try
@@ -46,13 +47,14 @@ namespace TurismoReal_Usuarios.Infra.Repositories
             }
         }
 
-        public async Task<UsuarioDTO> GetUsuario(string rut)
+        // GET USER BY ID
+        public async Task<UsuarioDTO> GetUsuario(int id)
         {
             try
             {
                 _context.OpenConnection();
                 OracleCommand cmd = UsuarioBuilder.ConfigBuscarUsuarioParams(_context.GetConnection());
-                cmd.Parameters["rut"].Value = rut;
+                cmd.Parameters["usuario_id"].Value = id;
 
                 OracleDataReader reader = (OracleDataReader)await cmd.ExecuteReaderAsync();
                 UsuarioDTO usuario = null;
@@ -71,8 +73,10 @@ namespace TurismoReal_Usuarios.Infra.Repositories
             }
         }
 
-        public async Task<bool> AddUsuario(UsuarioDTO usuario)
+        // ADD USER
+        public async Task<int> AddUsuario(UsuarioDTO usuario)
         {
+            int user_id = 0;
             try
             {
                 _context.OpenConnection();
@@ -81,23 +85,30 @@ namespace TurismoReal_Usuarios.Infra.Repositories
 
                 await cmd.ExecuteNonQueryAsync();
                 _context.CloseConnection();
-                return true;
+                user_id = Convert.ToInt32(cmd.Parameters["ok"].Value.ToString());
+                return user_id;
             }
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
-                return false;
+                return user_id;
             }
-
         }
 
-        public async Task<bool> DeleteUsuario(string rut)
+        // EDIT USER
+        public async Task<object> UpdateUsuario(UsuarioDTO usuario)
+        {
+            throw new NotImplementedException();
+        }
+
+        // DELETE USER
+        public async Task<bool> DeleteUsuario(int id)
         {
             try
             {
                 _context.OpenConnection();
                 OracleCommand cmd = UsuarioBuilder.ConfigEliminarUsuarioParams(_context.GetConnection());
-                cmd.Parameters["rut_u"].Value = rut;
+                cmd.Parameters["usuario_id"].Value = id;
                 await cmd.ExecuteNonQueryAsync();
                 _context.CloseConnection();
 

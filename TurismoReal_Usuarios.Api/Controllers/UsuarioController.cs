@@ -14,6 +14,8 @@ namespace TurismoReal_Usuarios.Api.Controllers
     public class UsuarioController : ControllerBase
     {
         public readonly IUsuarioRepository _usuarioRepository;
+        private readonly string serviceName = "turismo_real_usuarios";
+
         public UsuarioController(IUsuarioRepository usuarioRepository)
         {
             _usuarioRepository = usuarioRepository;
@@ -21,10 +23,10 @@ namespace TurismoReal_Usuarios.Api.Controllers
 
         // GET /api/v1/usuarios
         [HttpGet]
-        public async Task<IEnumerable<UsuarioDTO>> GetUsuarios()
+        public async Task<IEnumerable<object>> GetUsuarios()
         {
             LogModel log = new LogModel();
-            log.servicio = "turismo-real-api-usuarios";
+            log.servicio = serviceName;
             log.method = "GET";
             log.endpoint = "/api/v1/usuario";
             DateTime startService = DateTime.Now;
@@ -36,28 +38,28 @@ namespace TurismoReal_Usuarios.Api.Controllers
             log.finSolicitud = DateTime.Now;
             log.tiempoSolicitud = (log.finSolicitud - log.inicioSolicitud).TotalMilliseconds + " ms";
             log.statusCode = 200;
-            log.response = usuarios;
+            log.response = "Lista de usuarios";
             Console.WriteLine(log.parseJson());
             // LOG
             return usuarios;
         }
 
-        // GET /api/v1/usuario/{rut}
-        [HttpGet("{rut}")]
-        public async Task<object> GetUsuario(string rut)
+        // GET /api/v1/usuario/{id}
+        [HttpGet("{id}")]
+        public async Task<object> GetUsuario(int id)
         {
             LogModel log = new LogModel();
-            log.servicio = "turismo-real-api-usuarios";
+            log.servicio = serviceName;
             log.method = "GET";
             log.endpoint = "/api/v1/usuario/{rut}";
-            log.payload = rut;
+            log.payload = id;
             DateTime startService = DateTime.Now;
 
-            var usuario = await _usuarioRepository.GetUsuario(rut);
+            var usuario = await _usuarioRepository.GetUsuario(id);
 
             if (usuario == null)
             {
-                return new BadResponse($"No se encontró usuario con rut {rut}");
+                return new BadResponse($"No se encontró usuario con id {id}");
             }
 
             // LOG
@@ -69,7 +71,7 @@ namespace TurismoReal_Usuarios.Api.Controllers
             Console.WriteLine(log.parseJson());
             // LOG
 
-            return Ok(usuario);
+            return usuario;
         }
 
         // POST: /api/v1/usuario
@@ -77,18 +79,28 @@ namespace TurismoReal_Usuarios.Api.Controllers
         public async Task<object> AddUsuario([FromBody] UsuarioDTO pyl)
         {
             LogModel log = new LogModel();
-            log.servicio = "turismo-real-api-usuarios";
+            log.servicio = serviceName;
             log.method = "POST";
             log.endpoint = "/api/v1/usuario";
             log.payload = pyl;
             DateTime startService = DateTime.Now;
             UsuarioResponse response;
 
-            bool result = await _usuarioRepository.AddUsuario(pyl);
+            int id = await _usuarioRepository.AddUsuario(pyl);
 
-            if (result)
+            if (id > 0)
             {
-                response = new UsuarioResponse("Usuario agregado.");
+                UsuarioDTO usuario = await _usuarioRepository.GetUsuario(id);
+
+                // LOG
+                log.inicioSolicitud = startService;
+                log.finSolicitud = DateTime.Now;
+                log.tiempoSolicitud = (log.finSolicitud - log.inicioSolicitud).TotalMilliseconds + " ms";
+                log.statusCode = 200;
+                log.response = usuario;
+                Console.WriteLine(log.parseJson());
+                // LOG
+                return usuario;
             }
             else
             {
@@ -107,18 +119,18 @@ namespace TurismoReal_Usuarios.Api.Controllers
             return response;
         }
 
-        // DELETE: /api/v1/usuario/{rut}
-        [HttpDelete("{rut}")]
-        public async Task<object> DeleteUsuario(string rut)
+        // DELETE: /api/v1/usuario/{id}
+        [HttpDelete("{id}")]
+        public async Task<object> DeleteUsuario(int id)
         {
             LogModel log = new LogModel();
-            log.servicio = "turismo-real-api-usuarios";
+            log.servicio = serviceName;
             log.method = "DELETE";
             log.endpoint = "/api/v1/usuario/{rut}";
             DateTime startService = DateTime.Now;
             DeleteResponseOK response;
 
-            bool removed = await _usuarioRepository.DeleteUsuario(rut);
+            bool removed = await _usuarioRepository.DeleteUsuario(id);
 
             if (removed)
             {

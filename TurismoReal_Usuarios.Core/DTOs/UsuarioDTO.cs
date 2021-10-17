@@ -4,6 +4,8 @@ namespace TurismoReal_Usuarios.Core.DTOs
 {
     public class UsuarioDTO
     {
+        public int id { get; set; }
+        public string pasaporte { get; set; }
         public string rut { get; set; }
         public string dv { get; set; }
         public string primerNombre { get; set; }

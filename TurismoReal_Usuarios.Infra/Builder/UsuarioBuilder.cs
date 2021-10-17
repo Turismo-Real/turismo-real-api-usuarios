@@ -12,6 +12,7 @@ namespace TurismoReal_Usuarios.Infra.Builder
             OracleCommand cmd = new OracleCommand("sp_agregar_usuario", con);
             cmd.CommandType = CommandType.StoredProcedure;
 
+            cmd.Parameters.Add("pasaporte_u", OracleDbType.Varchar2).Direction = ParameterDirection.Input;
             cmd.Parameters.Add("rut_u", OracleDbType.Varchar2).Direction = ParameterDirection.Input;
             cmd.Parameters.Add("dv_u", OracleDbType.Varchar2).Direction = ParameterDirection.Input;
             cmd.Parameters.Add("pnombre_u", OracleDbType.Varchar2).Direction = ParameterDirection.Input;
@@ -31,6 +32,7 @@ namespace TurismoReal_Usuarios.Infra.Builder
             cmd.Parameters.Add("numero_u", OracleDbType.Varchar2).Direction = ParameterDirection.Input;
             cmd.Parameters.Add("depto_u", OracleDbType.Varchar2).Direction = ParameterDirection.Input;
             cmd.Parameters.Add("casa_u", OracleDbType.Varchar2).Direction = ParameterDirection.Input;
+            cmd.Parameters.Add("ok", OracleDbType.Int32).Direction = ParameterDirection.Output;
             return cmd;
         }
 
@@ -38,22 +40,23 @@ namespace TurismoReal_Usuarios.Infra.Builder
         {
             OracleCommand cmd = new OracleCommand("sp_eliminar_usuario", con);
             cmd.CommandType = CommandType.StoredProcedure;
-            cmd.Parameters.Add("rut_u", OracleDbType.Varchar2).Direction = ParameterDirection.Input;
+            cmd.Parameters.Add("usuario_id", OracleDbType.Int32).Direction = ParameterDirection.Input;
             cmd.Parameters.Add("removed", OracleDbType.Int32).Direction = ParameterDirection.Output;
             return cmd;
         }
 
         public static OracleCommand ConfigBuscarUsuarioParams(OracleConnection con)
         {
-            OracleCommand cmd = new OracleCommand("sp_usuario_por_rut", con);
+            OracleCommand cmd = new OracleCommand("sp_usuario_por_id", con);
             cmd.CommandType = CommandType.StoredProcedure;
-            cmd.Parameters.Add("rut", OracleDbType.Varchar2).Direction = ParameterDirection.Input;
+            cmd.Parameters.Add("usuario_id", OracleDbType.Int32).Direction = ParameterDirection.Input;
             cmd.Parameters.Add("cur_user", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
             return cmd;
         }
 
         public static void setAgregarUsuarioParams(OracleCommand cmd, UsuarioDTO usuario)
         {
+            cmd.Parameters["pasaporte_u"].Value = usuario.pasaporte;
             cmd.Parameters["rut_u"].Value = usuario.rut;
             cmd.Parameters["dv_u"].Value = usuario.dv;
             cmd.Parameters["pnombre_u"].Value = usuario.primerNombre;
@@ -78,6 +81,8 @@ namespace TurismoReal_Usuarios.Infra.Builder
         public static UsuarioDTO buildUsuarioEntity(OracleDataReader reader)
         {
             UsuarioDTO user = new UsuarioDTO();
+            user.id = Convert.ToInt32(reader.GetValue(reader.GetOrdinal("id_usuario")).ToString());
+            user.pasaporte = reader.GetValue(reader.GetOrdinal("pasaporte")).ToString();
             user.rut = reader.GetValue(reader.GetOrdinal("numrut")).ToString();
             user.dv = reader.GetValue(reader.GetOrdinal("dvrut")).ToString();
             user.primerNombre = reader.GetValue(reader.GetOrdinal("pnombre")).ToString();
