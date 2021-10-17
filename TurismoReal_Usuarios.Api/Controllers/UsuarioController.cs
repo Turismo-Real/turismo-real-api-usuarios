@@ -102,10 +102,8 @@ namespace TurismoReal_Usuarios.Api.Controllers
                 // LOG
                 return usuario;
             }
-            else
-            {
-                response = new UsuarioResponse("Error al agregar usuario.");
-            }
+
+            response = new UsuarioResponse("Error al agregar usuario.");
 
             // LOG
             log.inicioSolicitud = startService;
@@ -116,6 +114,45 @@ namespace TurismoReal_Usuarios.Api.Controllers
             Console.WriteLine(log.parseJson());
             // LOG
 
+            return response;
+        }
+
+        // PUT: /api/v1/usuario/{id}
+        [HttpPut("{id}")]
+        public async Task<object> UpdateUsuario(int id, [FromBody] UsuarioDTO usuario)
+        {
+
+            LogModel log = new LogModel();
+            log.servicio = serviceName;
+            log.method = "POST";
+            log.endpoint = "/api/v1/usuario";
+            log.payload = usuario;
+            DateTime startService = DateTime.Now;
+
+            int user_id = await _usuarioRepository.UpdateUsuario(id, usuario);
+            if (user_id > 0)
+            {
+                UsuarioDTO newUser = await _usuarioRepository.GetUsuario(user_id);
+
+                log.inicioSolicitud = startService;
+                log.finSolicitud = DateTime.Now;
+                log.tiempoSolicitud = (log.finSolicitud - log.inicioSolicitud).TotalMilliseconds + " ms";
+                log.statusCode = 200;
+                log.response = newUser;
+                Console.WriteLine(log.parseJson());
+                return newUser;
+            }
+
+            UsuarioResponse response = new UsuarioResponse("Error al modificar el usuario.");
+
+            // LOG
+            log.inicioSolicitud = startService;
+            log.finSolicitud = DateTime.Now;
+            log.tiempoSolicitud = (log.finSolicitud - log.inicioSolicitud).TotalMilliseconds + " ms";
+            log.statusCode = 200;
+            log.response = response;
+            Console.WriteLine(log.parseJson());
+            // LOG
             return response;
         }
 

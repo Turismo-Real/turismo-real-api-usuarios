@@ -7,11 +7,11 @@ namespace TurismoReal_Usuarios.Infra.Builder
 {
     public class UsuarioBuilder
     {
-        public static OracleCommand ConfigAgregarUsuarioParams(OracleConnection con)
+        public static OracleCommand ConfigUsuarioParams(OracleConnection con, string procedureName)
         {
-            OracleCommand cmd = new OracleCommand("sp_agregar_usuario", con);
+            OracleCommand cmd = new OracleCommand(procedureName, con);
             cmd.CommandType = CommandType.StoredProcedure;
-
+            cmd.BindByName = true;
             cmd.Parameters.Add("pasaporte_u", OracleDbType.Varchar2).Direction = ParameterDirection.Input;
             cmd.Parameters.Add("rut_u", OracleDbType.Varchar2).Direction = ParameterDirection.Input;
             cmd.Parameters.Add("dv_u", OracleDbType.Varchar2).Direction = ParameterDirection.Input;
@@ -23,7 +23,6 @@ namespace TurismoReal_Usuarios.Infra.Builder
             cmd.Parameters.Add("email_u", OracleDbType.Varchar2).Direction = ParameterDirection.Input;
             cmd.Parameters.Add("telmovil_u", OracleDbType.Varchar2).Direction = ParameterDirection.Input;
             cmd.Parameters.Add("telfijo_u", OracleDbType.Varchar2).Direction = ParameterDirection.Input;
-            cmd.Parameters.Add("pass_u", OracleDbType.Varchar2).Direction = ParameterDirection.Input;
             cmd.Parameters.Add("genero_u", OracleDbType.Varchar2).Direction = ParameterDirection.Input;
             cmd.Parameters.Add("pais_u", OracleDbType.Varchar2).Direction = ParameterDirection.Input;
             cmd.Parameters.Add("tipo_u", OracleDbType.Varchar2).Direction = ParameterDirection.Input;
@@ -32,7 +31,6 @@ namespace TurismoReal_Usuarios.Infra.Builder
             cmd.Parameters.Add("numero_u", OracleDbType.Varchar2).Direction = ParameterDirection.Input;
             cmd.Parameters.Add("depto_u", OracleDbType.Varchar2).Direction = ParameterDirection.Input;
             cmd.Parameters.Add("casa_u", OracleDbType.Varchar2).Direction = ParameterDirection.Input;
-            cmd.Parameters.Add("ok", OracleDbType.Int32).Direction = ParameterDirection.Output;
             return cmd;
         }
 
@@ -54,7 +52,7 @@ namespace TurismoReal_Usuarios.Infra.Builder
             return cmd;
         }
 
-        public static void setAgregarUsuarioParams(OracleCommand cmd, UsuarioDTO usuario)
+        public static void setUsuarioParams(OracleCommand cmd, UsuarioDTO usuario)
         {
             cmd.Parameters["pasaporte_u"].Value = usuario.pasaporte;
             cmd.Parameters["rut_u"].Value = usuario.rut;
@@ -67,7 +65,6 @@ namespace TurismoReal_Usuarios.Infra.Builder
             cmd.Parameters["email_u"].Value = usuario.correo;
             cmd.Parameters["telmovil_u"].Value = usuario.telefonoMovil;
             cmd.Parameters["telfijo_u"].Value = usuario.telefonoFijo;
-            cmd.Parameters["pass_u"].Value = usuario.password;
             cmd.Parameters["genero_u"].Value = usuario.genero;
             cmd.Parameters["pais_u"].Value = usuario.pais;
             cmd.Parameters["tipo_u"].Value = usuario.tipoUsuario;

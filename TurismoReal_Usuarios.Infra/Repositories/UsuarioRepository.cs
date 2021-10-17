@@ -80,8 +80,12 @@ namespace TurismoReal_Usuarios.Infra.Repositories
             try
             {
                 _context.OpenConnection();
-                OracleCommand cmd = UsuarioBuilder.ConfigAgregarUsuarioParams(_context.GetConnection());
-                UsuarioBuilder.setAgregarUsuarioParams(cmd, usuario);
+                OracleCommand cmd = UsuarioBuilder.ConfigUsuarioParams(_context.GetConnection(), "sp_agregar_usuario");
+                cmd.Parameters.Add("pass_u", OracleDbType.Varchar2).Direction = ParameterDirection.Input;
+                cmd.Parameters.Add("ok", OracleDbType.Int32).Direction = ParameterDirection.Output;
+
+                UsuarioBuilder.setUsuarioParams(cmd, usuario);
+                cmd.Parameters["pass_u"].Value = usuario.password;
 
                 await cmd.ExecuteNonQueryAsync();
                 _context.CloseConnection();
@@ -96,9 +100,20 @@ namespace TurismoReal_Usuarios.Infra.Repositories
         }
 
         // EDIT USER
-        public async Task<object> UpdateUsuario(UsuarioDTO usuario)
+        public async Task<int> UpdateUsuario(int id, UsuarioDTO usuario)
         {
-            throw new NotImplementedException();
+            int user_id = 0;
+
+            _context.OpenConnection();
+            OracleCommand cmd = UsuarioBuilder.ConfigUsuarioParams(_context.GetConnection(), "sp_editar_usuario");
+            cmd.Parameters.Add("usuario_id", OracleDbType.Int32).Direction = ParameterDirection.Input;
+            cmd.Parameters.Add("updated", OracleDbType.Int32).Direction = ParameterDirection.Output;
+            UsuarioBuilder.setUsuarioParams(cmd, usuario);
+            cmd.Parameters["usuario_id"].Value = id;
+            await cmd.ExecuteNonQueryAsync();
+            _context.CloseConnection();
+            user_id = Convert.ToInt32(cmd.Parameters["updated"].Value.ToString());
+            return user_id;
         }
 
         // DELETE USER
