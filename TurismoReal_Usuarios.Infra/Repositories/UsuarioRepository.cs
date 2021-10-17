@@ -117,8 +117,9 @@ namespace TurismoReal_Usuarios.Infra.Repositories
         }
 
         // DELETE USER
-        public async Task<bool> DeleteUsuario(int id)
+        public async Task<int> DeleteUsuario(int id)
         {
+            int removed = 0;
             try
             {
                 _context.OpenConnection();
@@ -127,16 +128,13 @@ namespace TurismoReal_Usuarios.Infra.Repositories
                 await cmd.ExecuteNonQueryAsync();
                 _context.CloseConnection();
 
-                int removed = int.Parse(cmd.Parameters["removed"].Value.ToString());
-
-                if (removed == 1)
-                    return true;
-                return false;
+                removed = int.Parse(cmd.Parameters["removed"].Value.ToString());
+                return removed;
             }
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
-                return false;
+                return removed;
             }
         }
     }

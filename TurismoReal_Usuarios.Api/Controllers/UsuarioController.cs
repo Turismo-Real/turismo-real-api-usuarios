@@ -167,15 +167,19 @@ namespace TurismoReal_Usuarios.Api.Controllers
             DateTime startService = DateTime.Now;
             DeleteResponseOK response;
 
-            bool removed = await _usuarioRepository.DeleteUsuario(id);
+            int removed = await _usuarioRepository.DeleteUsuario(id);
 
-            if (removed)
+            if (removed == 1)
             {
-                response = new DeleteResponseOK("Usuario eliminado.", removed);
+                response = new DeleteResponseOK("Usuario eliminado.", true);
+            }
+            else if(removed < 0)
+            {
+                response = new DeleteResponseOK($"No existe el usuario con id {id}", false);
             }
             else
             {
-                response = new DeleteResponseOK("Error al eliminar usuario.", removed);
+                response = new DeleteResponseOK("Error al eliminar usuario.", false);
             }
 
             // LOG

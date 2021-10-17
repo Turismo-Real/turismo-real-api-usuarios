@@ -21,6 +21,6 @@ namespace TurismoReal_Usuarios.Core.Interfaces
         Task<int> UpdateUsuario(int id, UsuarioDTO usuario);
 
         // DELETE USER
-        Task<bool> DeleteUsuario(int id);
+        Task<int> DeleteUsuario(int id);
     }
 }
