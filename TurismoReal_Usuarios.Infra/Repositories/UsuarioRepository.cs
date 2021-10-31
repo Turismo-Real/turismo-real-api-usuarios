@@ -102,8 +102,6 @@ namespace TurismoReal_Usuarios.Infra.Repositories
         // EDIT USER
         public async Task<int> UpdateUsuario(int id, UsuarioDTO usuario)
         {
-            int user_id = 0;
-
             _context.OpenConnection();
             OracleCommand cmd = UsuarioBuilder.ConfigUsuarioParams(_context.GetConnection(), "sp_editar_usuario");
             cmd.Parameters.Add("usuario_id", OracleDbType.Int32).Direction = ParameterDirection.Input;
@@ -112,7 +110,7 @@ namespace TurismoReal_Usuarios.Infra.Repositories
             cmd.Parameters["usuario_id"].Value = id;
             await cmd.ExecuteNonQueryAsync();
             _context.CloseConnection();
-            user_id = Convert.ToInt32(cmd.Parameters["updated"].Value.ToString());
+            int user_id = Convert.ToInt32(cmd.Parameters["updated"].Value.ToString());
             return user_id;
         }
 

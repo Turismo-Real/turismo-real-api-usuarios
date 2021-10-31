@@ -131,21 +131,21 @@ namespace TurismoReal_Usuarios.Api.Controllers
 
             int user_id = await _usuarioRepository.UpdateUsuario(id, usuario);
 
-            if (user_id == -1) return new { message = $"No se encontró usuario con ID {id}"  };
+            if (user_id == -1) return new { message = $"No se encontró usuario con ID {id}", updated = false };
             if (user_id > 0)
             {
-                UsuarioDTO newUser = await _usuarioRepository.GetUsuario(user_id);
+                UsuarioDTO updatedUser = await _usuarioRepository.GetUsuario(user_id);
 
                 log.inicioSolicitud = startService;
                 log.finSolicitud = DateTime.Now;
                 log.tiempoSolicitud = (log.finSolicitud - log.inicioSolicitud).TotalMilliseconds + " ms";
                 log.statusCode = 200;
-                log.response = newUser;
+                log.response = updatedUser;
                 Console.WriteLine(log.parseJson());
-                return newUser;
+                return new { message = "Usuario actualizado.", updated = true, usuario = updatedUser };
             }
 
-            object response = new { message = "Error al modificar el usuario." };
+            object response = new { message = "Error al modificar el usuario.", updated = false };
 
             // LOG
             log.inicioSolicitud = startService;
