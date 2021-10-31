@@ -91,6 +91,7 @@ namespace TurismoReal_Usuarios.Api.Controllers
             if (id > 0)
             {
                 UsuarioDTO usuario = await _usuarioRepository.GetUsuario(id);
+                response = new UsuarioResponse("Usuario agregado.", true, usuario);
 
                 // LOG
                 log.inicioSolicitud = startService;
@@ -100,10 +101,9 @@ namespace TurismoReal_Usuarios.Api.Controllers
                 log.response = usuario;
                 Console.WriteLine(log.parseJson());
                 // LOG
-                return usuario;
+                return response;
             }
-
-            response = new UsuarioResponse("Error al agregar usuario.");
+            response = new UsuarioResponse("Error al agregar usuario.", false, null);
 
             // LOG
             log.inicioSolicitud = startService;
@@ -145,7 +145,7 @@ namespace TurismoReal_Usuarios.Api.Controllers
                 return newUser;
             }
 
-            UsuarioResponse response = new UsuarioResponse("Error al modificar el usuario.");
+            object response = new { message = "Error al modificar el usuario." };
 
             // LOG
             log.inicioSolicitud = startService;
