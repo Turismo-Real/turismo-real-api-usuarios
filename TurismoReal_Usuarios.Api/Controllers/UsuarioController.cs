@@ -51,7 +51,7 @@ namespace TurismoReal_Usuarios.Api.Controllers
             LogModel log = new LogModel();
             log.servicio = serviceName;
             log.method = "GET";
-            log.endpoint = "/api/v1/usuario/{rut}";
+            log.endpoint = "/api/v1/usuario/{id}";
             log.payload = id;
             DateTime startService = DateTime.Now;
 
@@ -121,11 +121,11 @@ namespace TurismoReal_Usuarios.Api.Controllers
         [HttpPut("{id}")]
         public async Task<object> UpdateUsuario(int id, [FromBody] UsuarioDTO usuario)
         {
-
             LogModel log = new LogModel();
             log.servicio = serviceName;
             log.method = "PUT";
-            log.endpoint = "/api/v1/usuario";
+            log.endpoint = "/api/v1/usuario/{id}";
+            log.parameters.Add(id.ToString());
             log.payload = usuario;
             DateTime startService = DateTime.Now;
 
@@ -144,9 +144,7 @@ namespace TurismoReal_Usuarios.Api.Controllers
                 Console.WriteLine(log.parseJson());
                 return new { message = "Usuario actualizado.", updated = true, usuario = updatedUser };
             }
-
             object response = new { message = "Error al modificar el usuario.", updated = false };
-
             // LOG
             log.inicioSolicitud = startService;
             log.finSolicitud = DateTime.Now;
@@ -165,7 +163,8 @@ namespace TurismoReal_Usuarios.Api.Controllers
             LogModel log = new LogModel();
             log.servicio = serviceName;
             log.method = "DELETE";
-            log.endpoint = "/api/v1/usuario/{rut}";
+            log.endpoint = "/api/v1/usuario/{id}";
+            log.payload = id;
             DateTime startService = DateTime.Now;
             DeleteResponseOK response;
 
@@ -183,7 +182,6 @@ namespace TurismoReal_Usuarios.Api.Controllers
             {
                 response = new DeleteResponseOK("Error al eliminar usuario.", false);
             }
-
             // LOG
             log.inicioSolicitud = startService;
             log.finSolicitud = DateTime.Now;
@@ -192,8 +190,78 @@ namespace TurismoReal_Usuarios.Api.Controllers
             log.response = response;
             Console.WriteLine(log.parseJson());
             // LOG
-
             return response;
+        }
+
+        // PATCH: /api/v1/usuario/{id}
+        [HttpPatch("{id}")]
+        public async Task<object> UpdatePassword(int id, [FromBody] PasswordPayload password)
+        {
+            LogModel log = new LogModel();
+            log.servicio = serviceName;
+            log.method = "PATCH";
+            log.endpoint = "/api/v1/usuario/{id}";
+            log.payload = id;
+            DateTime startService = DateTime.Now;
+
+            int result = await _usuarioRepository.UpdatePassword(id, password);
+
+            string message;
+            if (result == -1)
+            {
+                message = $"No existe el usuario con id {id}.";
+                var responseNotFound = new { message, updated = false };
+                // LOG
+                log.inicioSolicitud = startService;
+                log.finSolicitud = DateTime.Now;
+                log.tiempoSolicitud = (log.finSolicitud - log.inicioSolicitud).TotalMilliseconds + " ms";
+                log.statusCode = 200;
+                log.response = responseNotFound;
+                Console.WriteLine(log.parseJson());
+                // LOG
+                return responseNotFound;
+            }
+
+            if (result == -2)
+            {
+                message = "La contraseña enviada no coincide con la actual.";
+                var responseBadPassword = new { message, updated = false };
+                // LOG
+                log.inicioSolicitud = startService;
+                log.finSolicitud = DateTime.Now;
+                log.tiempoSolicitud = (log.finSolicitud - log.inicioSolicitud).TotalMilliseconds + " ms";
+                log.statusCode = 200;
+                log.response = responseBadPassword;
+                Console.WriteLine(log.parseJson());
+                // LOG
+                return responseBadPassword;
+            }
+
+            if (result == 0)
+            {
+                message = "Error al actualizar contraseña.";
+                var responseError = new { message, updated = false };
+                // LOG
+                log.inicioSolicitud = startService;
+                log.finSolicitud = DateTime.Now;
+                log.tiempoSolicitud = (log.finSolicitud - log.inicioSolicitud).TotalMilliseconds + " ms";
+                log.statusCode = 200;
+                log.response = responseError;
+                Console.WriteLine(log.parseJson());
+                // LOG
+                return responseError;
+            }
+            message = "Contraseña actualizada.";
+            var responseOK = new { message, updated = true };
+            // LOG
+            log.inicioSolicitud = startService;
+            log.finSolicitud = DateTime.Now;
+            log.tiempoSolicitud = (log.finSolicitud - log.inicioSolicitud).TotalMilliseconds + " ms";
+            log.statusCode = 200;
+            log.response = responseOK;
+            Console.WriteLine(log.parseJson());
+            // LOG
+            return responseOK;
         }
     }
 }

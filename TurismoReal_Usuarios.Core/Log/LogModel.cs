@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace TurismoReal_Usuarios.Core.Log
 {
@@ -13,6 +14,7 @@ namespace TurismoReal_Usuarios.Core.Log
         public DateTime finSolicitud;
         public string tiempoSolicitud;
         public object payload = null;
+        public List<string> parameters = new List<string>();
         public object response = null;
 
         public string parseJson()

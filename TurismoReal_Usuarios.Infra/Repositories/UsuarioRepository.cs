@@ -5,6 +5,7 @@ using System.Data;
 using System.Threading.Tasks;
 using TurismoReal_Usuarios.Core.DTOs;
 using TurismoReal_Usuarios.Core.Interfaces;
+using TurismoReal_Usuarios.Core.Messages;
 using TurismoReal_Usuarios.Infra.Builder;
 using TurismoReal_Usuarios.Infra.Context;
 
@@ -134,6 +135,29 @@ namespace TurismoReal_Usuarios.Infra.Repositories
                 Console.WriteLine(e.Message);
                 return removed;
             }
+        }
+
+        // UPDATE PASSWORD
+        public async Task<int> UpdatePassword(int id, PasswordPayload password)
+        {
+            _context.OpenConnection();
+
+            OracleCommand cmd = new OracleCommand("sp_cambiar_password", _context.GetConnection());
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.BindByName = true;
+            cmd.Parameters.Add("usuario_id", OracleDbType.Int32).Direction = ParameterDirection.Input;
+            cmd.Parameters.Add("current_password", OracleDbType.Varchar2).Direction = ParameterDirection.Input;
+            cmd.Parameters.Add("new_password", OracleDbType.Varchar2).Direction = ParameterDirection.Input;
+            cmd.Parameters.Add("updated", OracleDbType.Int32).Direction = ParameterDirection.Output;
+
+            cmd.Parameters["usuario_id"].Value = id;
+            cmd.Parameters["current_password"].Value = password.currentPassword;
+            cmd.Parameters["new_password"].Value = password.newPassword;
+            await cmd.ExecuteNonQueryAsync();
+            _context.CloseConnection();
+
+            int updated = Convert.ToInt32(cmd.Parameters["updated"].Value.ToString());
+            return updated;
         }
     }
 }

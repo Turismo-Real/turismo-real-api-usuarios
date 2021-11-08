@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using TurismoReal_Usuarios.Core.DTOs;
+using TurismoReal_Usuarios.Core.Messages;
 
 namespace TurismoReal_Usuarios.Core.Interfaces
 {
@@ -22,5 +21,8 @@ namespace TurismoReal_Usuarios.Core.Interfaces
 
         // DELETE USER
         Task<int> DeleteUsuario(int id);
+
+        // UPDATE PASSWORD
+        Task<int> UpdatePassword(int id, PasswordPayload password);
     }
 }
