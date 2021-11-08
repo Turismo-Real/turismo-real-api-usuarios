@@ -124,7 +124,7 @@ namespace TurismoReal_Usuarios.Api.Controllers
 
             LogModel log = new LogModel();
             log.servicio = serviceName;
-            log.method = "POST";
+            log.method = "PUT";
             log.endpoint = "/api/v1/usuario";
             log.payload = usuario;
             DateTime startService = DateTime.Now;
